@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [[ $1 == connect ]]; then
+  if [[ $2 -eq 0 || $3 -eq 0 ]]; then
+    echo "Missing argument(s). Use 'help' for more information."
+    exit 1
+  fi
+
+  pactl load-module module-tunnel-sink sink_name=${3} server=tcp:${2}:4656 channels=2 rate=44100 2> /dev/null
+elif [[ $1 == host ]]; then
+  if [[ $2 -eq 0 ]]; then
+    echo "Missing argument(s). Use 'help' for more information."
+    exit 1
+  fi
+
+  pactl load-module module-native-protocol-tcp port=4656 listen=${2} 2> /dev/null
+elif [[ $1 == disconnect ]]; then
+  pactl unload-module module-tunnel-sink 2> /dev/null
+elif [[ $1 == stop ]]; then
+  pactl unload-module module-native-protocol-tcp 2> /dev/null
+elif [[ $1 == help ]]; then
+  echo "Usage: tcp-audio-sink command [ARGUMENTS]..."
+  echo "Available commands:"
+  echo "  connect <IP_ADDRESS> <SINK_NAME>"$'\t'"Connect to a remote sink"
+  echo "  host <SERVER_IP_ADDRESS>"$'\t\t'"Host a remote sink"
+  echo "  disconnect"$'\t\t\t\t'"Disconnect from all remote sinks"
+  echo "  stop"$'\t\t\t\t\t'"Stop hosting a remote sink"
+else
+  echo "Invalid command. Use 'help' for more information."
+fi
