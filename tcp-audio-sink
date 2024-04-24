@@ -1,23 +1,23 @@
 #!/bin/bash
 
 if [[ $1 == connect ]]; then
-  if [[ $2 -eq 0 || $3 -eq 0 ]]; then
-    echo "Missing argument(s). Use 'help' for more information."
+  if [[ "$#" -eq 2 ]]; then
+    echo "Usage: tcp-audio-sink connect <IP_ADDRESS> <SINK_NAME>"
     exit 1
   fi
 
-  pactl load-module module-tunnel-sink sink_name=${3} server=tcp:${2}:4656 channels=2 rate=44100 2> /dev/null
+  pactl load-module module-tunnel-sink sink_name=${3} server=tcp:${2}:4656 channels=2 rate=44100
 elif [[ $1 == host ]]; then
-  if [[ $2 -eq 0 ]]; then
-    echo "Missing argument(s). Use 'help' for more information."
+  if [[ "$#" -eq 1 ]]; then
+    echo "Usage: tcp-audio-sink host <SERVER_IP_ADDRESS>"
     exit 1
   fi
 
-  pactl load-module module-native-protocol-tcp port=4656 listen=${2} 2> /dev/null
+  pactl load-module module-native-protocol-tcp port=4656 listen=${2}
 elif [[ $1 == disconnect ]]; then
-  pactl unload-module module-tunnel-sink 2> /dev/null
+  pactl unload-module module-tunnel-sink
 elif [[ $1 == stop ]]; then
-  pactl unload-module module-native-protocol-tcp 2> /dev/null
+  pactl unload-module module-native-protocol-tcp
 elif [[ $1 == help ]]; then
   echo "Usage: tcp-audio-sink command [ARGUMENTS]..."
   echo "Available commands:"
